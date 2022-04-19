@@ -24,7 +24,7 @@ const mysqlConnection = mysql.createConnection(
     }
 );
 
-mysqlConnection.connect((err)=>{
+mysqlConnection.connect((err:any)=>{
     if(!err){
         console.log('DB is connected');     
     }
@@ -35,18 +35,18 @@ mysqlConnection.connect((err)=>{
 
 app.listen(3000, () => console.log("server is running"));
 
-app.get('/', (req, res) => {
+app.get('/', (req:any, res:any) => {
     res.json({message: 'ok'});   
 });
 
-app.get('/gear', (req, res) => {
-    mysqlConnection.query('SELECT * FROM gear', (err, results, fields) =>{
+app.get('/gear', (req:any, res:any) => {
+    mysqlConnection.query('SELECT * FROM gear', (err:any, results:any, fields:any) =>{
         if(err) throw err;
         res.send(results);
     })
 });
 
-app.get('/brand', (req, res) => {
+app.get('/brand', (req:any, res:any) => {
     const type = req.query.type;
     const sport = req.query.sport;
     const baseQuery = `SELECT DISTINCT brand FROM gear WHERE 1`;
@@ -60,7 +60,7 @@ app.get('/brand', (req, res) => {
     console.log(type, sport);
 
     try {
-        mysqlConnection.query(query, (err, results, fields) =>{
+        mysqlConnection.query(query, (err:any, results:any, fields:any) =>{
             if(err) throw err;
             let list:queryResults[] = [];
             results.forEach((item: { brand: string, flow: string; }) => list.push({item: item.brand, flow: item.flow}));
@@ -74,7 +74,7 @@ app.get('/brand', (req, res) => {
       }
 });
 
-app.get('/models', (req, res) => {
+app.get('/models', (req:any, res:any) => {
     const type = req.query.type;
     const sport = req.query.sport;
     const brand = req.query.brand;
@@ -91,7 +91,7 @@ app.get('/models', (req, res) => {
     }
     console.log(type, sport);
     try {
-        mysqlConnection.query(query, (err, results, fields) =>{
+        mysqlConnection.query(query, (err:any, results:any, fields:any) =>{
             if(err) throw err;
             let list:queryResults[] = [];
             results.forEach((item: { model: string, flow: string }) => list.push({item: item.model, flow: item.flow}));;
@@ -105,7 +105,7 @@ app.get('/models', (req, res) => {
       }
 });
 
-app.get('/type', (req, res) => {
+app.get('/type', (req:any, res:any) => {
     const sport = req.query.sport;
     const brand = req.query.brand;
     const baseQuery = `SELECT DISTINCT type, flow FROM gear WHERE 1`;
@@ -117,7 +117,7 @@ app.get('/type', (req, res) => {
         query = `${query} and brand = "${(brand)}"`;
     }
     try {
-        mysqlConnection.query(query, (err, results, fields) =>{
+        mysqlConnection.query(query, (err:any, results:any, fields:any) =>{
             if(err) throw err;
             let list:queryResults[] = [];
             results.forEach((item: { type: string, flow:string; }) => list.push({item: item.type, flow: item.flow}));
@@ -131,11 +131,11 @@ app.get('/type', (req, res) => {
       }
 });
 
-app.get('/sport', (req, res) => {
+app.get('/sport', (req:any, res:any) => {
     const baseQuery = `SELECT DISTINCT sport FROM gear WHERE 1`;
     let query = baseQuery;
     try {
-        mysqlConnection.query(query, (err, results, fields) =>{
+        mysqlConnection.query(query, (err:any, results:any, fields:any) =>{
             if(err) throw err;
             let list:queryResults[] = [];
             results.forEach((item: { sport: string, flow:string; }) => list.push({item: item.sport, flow: item.flow}));
@@ -149,14 +149,32 @@ app.get('/sport', (req, res) => {
       }
 });
 
-app.get('/items', (req, res) => {
+app.get('/items', (req:any, res:any) => {
     const baseQuery = `SELECT DISTINCT itemName, primaryFlow FROM general_items WHERE 1`;
     let query = baseQuery;
     try {
-        mysqlConnection.query(query, (err, results, fields) =>{
+        mysqlConnection.query(query, (err:any, results:any, fields:any) =>{
             if(err) throw err;
             let list:queryResults[] = [];
             results.forEach((item: { itemName: string, primaryFlow:string; }) => list.push({item: item.itemName, flow: item.primaryFlow}));
+            console.log(results);
+            res.send({type:'items', data:list})
+        })       } 
+        catch (error) {
+        console.error(error);
+        // expected output: ReferenceError: nonExistentFunction is not defined
+        // Note - error messages will vary depending on browser
+      }
+});
+
+app.get('/items_keys', (req:any, res:any) => {
+    const baseQuery = `SELECT DISTINCT name FROM items_keys WHERE 1`;
+    let query = baseQuery;
+    try {
+        mysqlConnection.query(query, (err:any, results:any, fields:any) =>{
+            if(err) throw err;
+            let list:queryResults[] = [];
+            results.forEach((item: { name: string, primaryFlow:string; }) => list.push({item: item.name, flow: item.primaryFlow}));
             console.log(results);
             res.send({type:'items', data:list})
         })       } 
