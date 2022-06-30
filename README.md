@@ -1,1 +1,1 @@
-# Booomtag-testapi
+# sportequipment-api
